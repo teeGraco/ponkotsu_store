@@ -1,0 +1,12 @@
+version: "3"
+services:
+  laravel:
+    tty: true
+    build: .
+    volumes:
+      - ./src:/var/www/laravel
+    image: ponkotsu_store
+    ports:
+        - 80:80
+        - 8025:8025
+    command: sh -c "cd /var/www/laravel && composer install && tail -f /dev/null"

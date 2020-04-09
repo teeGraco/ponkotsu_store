@@ -1,0 +1,55 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'pull image'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    docker pull gcr.io/$PROJECT_ID/$REPO_NAME:latest || exit 0
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'build image'
+  args: [
+    'build', 
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA', 
+    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME:latest', 
+    '.'
+  ]
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'tag as latest'
+  args: [
+    'tag',
+    'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA', 
+    'gcr.io/$PROJECT_ID/$REPO_NAME:latest'
+  ]
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'push image'
+  args: [
+    'push', 
+    'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA'
+  ]
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: 'add metadata to prune images'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    gcloud compute instances add-metadata $_VM_NAME \
+    --zone $_VM_ZONE \
+    --metadata startup-script='
+      #!/bin/bash
+      /usr/bin/docker image prune -a -f
+    '
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: 'deploy container'
+  args: [
+    'compute', 'instances', 'update-container', '$_VM_NAME',
+    '--zone', '$_VM_ZONE',
+    '--container-image', 'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA'
+  ]
+
+substitutions:
+    _VM_NAME: 'ponkotsu-store-vm'
+    _VM_ZONE: 'asia-northeast1-b'
+
+images: ['gcr.io/$PROJECT_ID/$REPO_NAME:latest']
+timeout: 3600s
