@@ -3,7 +3,7 @@
 This is a signficant vulnerable EC site web application made with Laravel.
 
 The product is meant for educational purpose only.
-**DO NOT** use any portion of the code for pdocution.
+**DO NOT** use any portion of the code for production.
 
 脆弱性が大量に仕込まれているECサイトになります。
 phpで開発されています。
