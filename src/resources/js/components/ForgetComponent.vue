@@ -109,6 +109,7 @@ export default {
     postForm() {
       this.waitDialog = true;
       this.dialogMessage = "トークンを送信しています...";
+      this.token = ""
       axios
         .post("/api/forget/send", {
           email: this.email,
@@ -170,7 +171,6 @@ export default {
     step: function(val) {
       this.waitDialog = false;
       this.errorMessage = "";
-      this.token= "";
     }
   }
 };
