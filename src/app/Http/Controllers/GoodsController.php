@@ -114,6 +114,8 @@ class GoodsController extends Controller
     {
         $good = Good::where('id', $id)->select('id', 'thumbnail', 'price', 'title', 'description')->firstOrFail();
         $reviews = Review::where('good_id', $good->id)->leftJoin('users', 'reviews.user_id', '=', 'users.id')->orderBy('reviews.updated_at', 'desc')->get();
+        // ここでちゃんとSELECTしようねっていう話。
+        
         foreach ($reviews as $review) {
             if (preg_match_all('(https?://[-_.!~*\'()a-zA-Z0-9;/?:@&=+$,%#]+)', $review->message, $result) !== false) {
                 foreach ($result[0] as $url) {

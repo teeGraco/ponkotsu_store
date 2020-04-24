@@ -92,6 +92,7 @@ export default {
       this.waitDialog = true;
       let params = new URLSearchParams();
       if (this.keyword) params.append("keyword", this.keyword);
+      // この辺でkeywordの記号をエスケープさせる。
       params.append("ord", this.ord);
       axios.post("/api/search", params).then(request => {
         this.goods = request.data.goods;
