@@ -12,7 +12,7 @@ use App\Good;
 use App\History;
 
 class BuyController extends Controller
-{    
+{
     /**
      * 購入画面のViewを返す
      *
@@ -32,7 +32,7 @@ class BuyController extends Controller
         }
         return view('buy', ["goodId" => $id]);
     }
-    
+
     /**
      * 購入金額を計算する(このロジックは正しいものとしてください)
      *
@@ -45,7 +45,7 @@ class BuyController extends Controller
     {
         return ceil($price * $count * (100 - $discount) / 100);
     }
-    
+
     /**
      * 商品を購入する
      *
@@ -55,10 +55,12 @@ class BuyController extends Controller
     public function buy(Request $request)
     {
         return DB::transaction(function () use ($request) {
-            $userId = $request->input('id');
-
-            $goodId = $request->input('good_id');
             $count = $request->input('count');
+            if ($count <= 0) {
+                return response()->json(['status' => false, 'message' => '負数を入力はできません']);
+            }
+            $userId = $request->input('id');
+            $goodId = $request->input('good_id');
             $discount = $request->input('discount');
             $user = User::where('id', $userId)->firstOrFail();
             $good = Good::where('id', $goodId)->firstOrFail();
@@ -74,7 +76,7 @@ class BuyController extends Controller
             return response()->json(['status' => true, 'balance' => $user->balance, 'price' => $price]);
         });
     }
-    
+
     /**
      * dryBuy 商品の合計金額を計算する
      *
