@@ -26,7 +26,7 @@ class LoginController extends Controller
         }
         return view('login');
     }
-    
+
     /**
      * ログイン用APIユーザーとパスワードを検証する
      *
@@ -35,8 +35,8 @@ class LoginController extends Controller
      */
     public function login(Request $request)
     {
-        Log::Debug("name:" . $request->name);
-        Log::Debug("password:" . $request->password);
+        // Log::Debug("name:" . $request->name);
+        // Log::Debug("password:" . $request->password);
         try {
             $user = User::whereRaw("name = '" . $request->name . "' AND password = '" . md5($request->password) . "'")->firstOrFail();
             $sessionId = random_int(0, 2 ** 32);
