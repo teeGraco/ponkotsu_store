@@ -17,6 +17,11 @@ class ImageController extends Controller
      */
     public function index(Request $request){
         $path = public_path() . "/storage/". $request->input('file');
+
+        if(!exif_imagetype($path)){
+            return response()->json(['message' => '引数が不正です'], 400);
+        }
+
         if(!file_exists($path)){
             return response()->json(['message' => 'ファイルが存在しません'], 404);
         }
