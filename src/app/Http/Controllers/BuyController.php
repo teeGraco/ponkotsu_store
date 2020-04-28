@@ -56,17 +56,33 @@ class BuyController extends Controller
     public function buy(Request $request)
     {
         return DB::transaction(function () use ($request) {
-            $coupon = new Coupon();
+            $sessionId = $request->cookie('session_id');
+            if (is_null($sessionId)) {
+                return redirect('login');
+            }
+            $session_json = Redis::get($sessionId);
+            if (!$session_json) {
+                return redirect('login');
+            }
+            $session = json_decode($session_json);
+            $id_session_store = $session->{'userid'};
+
+            $userId = $request->input('id');
+            if ($userId != $id_session_store) {
+                return response()->json(['status' => false, 'message' => 'ユーザIDが不正です']);
+            }
 
             $count = $request->input('count');
             if ($count <= 0) {
                 return response()->json(['status' => false, 'message' => '負数を入力はできません']);
             }
+
+            $coupon = new Coupon();
             $discount = $request->input('discount');
             if ($discount != 0 and !$coupon->hasCoupon($discount)) {
                 return response()->json(['status' => false, 'message' => 'クーポンの入力に異常があります']);
             }
-            $userId = $request->input('id');
+
             $goodId = $request->input('good_id');
             $user = User::where('id', $userId)->firstOrFail();
             $good = Good::where('id', $goodId)->firstOrFail();
