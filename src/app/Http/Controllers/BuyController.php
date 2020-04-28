@@ -10,6 +10,7 @@ use Log;
 use App\User;
 use App\Good;
 use App\History;
+use App\Coupon;
 
 class BuyController extends Controller
 {
@@ -55,13 +56,18 @@ class BuyController extends Controller
     public function buy(Request $request)
     {
         return DB::transaction(function () use ($request) {
+            $coupon = new Coupon();
+
             $count = $request->input('count');
             if ($count <= 0) {
                 return response()->json(['status' => false, 'message' => '負数を入力はできません']);
             }
+            $discount = $request->input('discount');
+            if ($discount != 0 and !$coupon->hasCoupon($discount)) {
+                return response()->json(['status' => false, 'message' => 'クーポンの入力に異常があります']);
+            }
             $userId = $request->input('id');
             $goodId = $request->input('good_id');
-            $discount = $request->input('discount');
             $user = User::where('id', $userId)->firstOrFail();
             $good = Good::where('id', $goodId)->firstOrFail();
             $price = $this->calc($good->price, $count, $discount);
