@@ -90,7 +90,7 @@ class GoodsController extends Controller
 
         $userId = json_decode($session)->userid;
         $goodId = $request->input('good_id');
-        $message = $request->input('message');
+        $message = htmlspecialchars($request->input('message'), ENT_QUOTES);
         $rating = $request->input('rating');
 
         if (!Good::where('id', $goodId)->exists()) {
