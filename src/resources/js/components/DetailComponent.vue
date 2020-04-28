@@ -62,9 +62,9 @@
                     <v-list-item-content>
                       <div class="overline mb-4">{{ review.name + " " + review.updated_at }}</div>
                       <v-rating v-model="review.rating" :readonly="true"></v-rating>
-                      <div v-html="review.message"></div>
+                      <div > {{ review.message }} </div>
                       <v-img v-if="review.ogImageUrl" :src="`data:image;base64,${review.ogImageUrl}`" />
-                      <div v-html="review.ogTitle"></div>
+                      <div > {{ review.ogTitle }} </div>
                     </v-list-item-content>
 
                     <v-list-item-avatar tile size="80" color="greymx-auto">
