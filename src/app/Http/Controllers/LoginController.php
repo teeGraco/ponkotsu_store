@@ -39,7 +39,7 @@ class LoginController extends Controller
         // Log::Debug("password:" . $request->password);
         try {
             $user = User::whereRaw("name = '" . $request->name . "' AND password = '" . md5($request->password) . "'")->firstOrFail();
-            $sessionId = random_int(0, 2 ** 32);
+            $sessionId = session_create_id();
             Redis::set($sessionId, json_encode(['userid' => $user->id]));
             return response()->json(['session_id' => $sessionId, 'admin' => $user->admin]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
