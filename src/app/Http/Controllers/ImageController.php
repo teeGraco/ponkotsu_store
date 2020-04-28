@@ -27,7 +27,8 @@ class ImageController extends Controller
                 return response()->json(['message' => 'ファイルサイズが大きすぎます'], 404);
             }
             $tmpPath = public_path() . "/storage/tmp/".uniqid().'.png';
-            exec('convert '.$path.' -resize '.$x.'x'.$y.'! '.$tmpPath);
+            $cmd = escapeshellcmd('convert '.$path.' -resize '.$x.'x'.$y.'! '.$tmpPath);
+            exec($cmd);
             return response()->file($tmpPath);
         }
         return response()->file($path);
