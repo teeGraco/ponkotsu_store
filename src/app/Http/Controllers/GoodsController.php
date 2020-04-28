@@ -113,9 +113,7 @@ class GoodsController extends Controller
     public function detail(Request $request, $id)
     {
         $good = Good::where('id', $id)->select('id', 'thumbnail', 'price', 'title', 'description')->firstOrFail();
-        $reviews = Review::where('good_id', $good->id)->leftJoin('users', 'reviews.user_id', '=', 'users.id')->orderBy('reviews.updated_at', 'desc')->get();
-        // ここでちゃんとSELECTしようねっていう話。
-        
+        $reviews = Review::select(['name','message','icon','rating','reviews.updated_at'])->where('good_id', $good->id)->leftJoin('users', 'reviews.user_id', '=', 'users.id')->orderBy('reviews.updated_at', 'desc')->get();        
         foreach ($reviews as $review) {
             if (preg_match_all('(https?://[-_.!~*\'()a-zA-Z0-9;/?:@&=+$,%#]+)', $review->message, $result) !== false) {
                 foreach ($result[0] as $url) {
